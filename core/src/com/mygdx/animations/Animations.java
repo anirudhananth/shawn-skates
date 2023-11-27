@@ -15,6 +15,7 @@ public class Animations {
     private static Animation<Texture> SuperJump;
     private static Animation<Texture> Fall;
     private static Animation<Texture> PowerUp;
+    private static Animation<TextureRegion> Countdown;
     private final static float fps = 17f;
     private final static float superJumpFps = 14f;
 
@@ -25,6 +26,8 @@ public class Animations {
         Jump = new AnimateSprite(Constants.JUMP_PATH, fps).getAnimation();
         SuperJump = new AnimateSprite(Constants.SUPER_JUMP_PATH, superJumpFps).getAnimation();
         Fall = new AnimateSprite(Constants.FALL_PATH, superJumpFps).getAnimation();
+        // Power Up
+        Countdown = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("assets/countdown.gif").read());
     }
 
     public static Animation<Texture> getIdle() {
@@ -67,6 +70,20 @@ public class Animations {
             throw new NullPointerException("Fall animation is null.");
         }
         return Fall;
+    }
+
+    public static Animation<Texture> getPowerUp() {
+        if(PowerUp == null) {
+            throw new NullPointerException("Power up animation is null.");
+        }
+        return PowerUp;
+    }
+
+    public static Animation<TextureRegion> getCountdown() {
+        if(Countdown == null) {
+            throw new NullPointerException("Countdown animation is null.");
+        }
+        return Countdown;
     }
 
     public static void dispose() {

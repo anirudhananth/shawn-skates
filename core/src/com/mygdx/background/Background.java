@@ -12,6 +12,7 @@ import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
+import com.mygdx.states.Pause;
 
 public class Background {
     GameStateManager gsm;
@@ -19,6 +20,7 @@ public class Background {
     public Texture powerUp;
     private final String bgPath;
     public Body powerUpBody;
+    public Body ground;
 
     public Background(GameStateManager gsm) {
         this.gsm = gsm;
@@ -28,12 +30,12 @@ public class Background {
 
     public void create() {
         bgTexture = new Texture(bgPath);
-        powerUp = new Texture("assets/orb2.png");
+        powerUp = new Texture("assets/testorb.png");
 
         setPowerUpBody();
+        setGround();
 
         PauseButton.create();
-        Gdx.input.setInputProcessor(new InputHandler());
     }
 
     private void setPowerUpBody() {
@@ -52,6 +54,22 @@ public class Background {
         powerUpBody.createFixture(fixtureDef);
     }
 
+    private void setGround() {
+        BodyDef bodyDef = new BodyDef();
+        bodyDef.type = BodyDef.BodyType.StaticBody;
+        bodyDef.position.set(0, 0);
+        ground = GameStateManager.World.createBody(bodyDef);
+
+        PolygonShape shape = new PolygonShape();
+        shape.setAsBox(100000, 75);
+
+        FixtureDef fixtureDef = new FixtureDef();
+        fixtureDef.shape = shape;
+        fixtureDef.density = 1f;
+
+        ground.createFixture(fixtureDef);
+    }
+
     public void render(SpriteBatch batch, float playerX) {
         int offset = (int) playerX / bgTexture.getWidth();
         batch.draw(bgTexture, (offset - 1) * bgTexture.getWidth() + 10f, 0);
@@ -67,60 +85,5 @@ public class Background {
     public void dispose() {
         bgTexture.dispose();
         PauseButton.dispose();
-    }
-
-
-    static class InputHandler implements InputProcessor {
-        @Override
-        public boolean keyDown(int keycode) {
-            return false;
-        }
-
-        @Override
-        public boolean keyUp(int keycode) {
-            return false;
-        }
-
-        @Override
-        public boolean keyTyped(char character) {
-            return false;
-        }
-
-        @Override
-        public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-            Vector3 touchPoint = new Vector3(screenX, screenY, 0);
-            GameStateManager.Camera.unproject(touchPoint);
-            float worldX = screenX * Gdx.graphics.getWidth() / (float) Gdx.graphics.getBackBufferWidth();
-            float worldY = (Gdx.graphics.getHeight() - screenY) * Gdx.graphics.getHeight() / (float) Gdx.graphics.getBackBufferHeight();
-            if(PauseButton.pauseButtonBounds.contains(touchPoint.x, touchPoint.y)) {
-                System.out.println("pause button clicked");
-            }
-            return false;
-        }
-
-        @Override
-        public boolean touchUp(int screenX, int screenY, int pointer, int button) {
-            return false;
-        }
-
-        @Override
-        public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
-            return false;
-        }
-
-        @Override
-        public boolean touchDragged(int screenX, int screenY, int pointer) {
-            return false;
-        }
-
-        @Override
-        public boolean mouseMoved(int screenX, int screenY) {
-            return false;
-        }
-
-        @Override
-        public boolean scrolled(float amountX, float amountY) {
-            return false;
-        }
     }
 }

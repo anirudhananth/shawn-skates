@@ -2,18 +2,21 @@ package com.mygdx.states;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
+import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.animations.Animations;
 import com.mygdx.background.Background;
+import com.mygdx.background.PauseButton;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
 
 public class Player extends State {
     GameStateManager gsm;
-    public Animation<Texture> animation;
+    public Animation<Texture> playerAnimation;
     private int startingFrameCount;
     private int fallingFrameCount;
     public Body playerBody;
@@ -41,8 +44,7 @@ public class Player extends State {
 
     public void create () {
         elapsed = 0;
-//        animation = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("assets/shawn3.gif").read());
-        animation = Animations.getStarting();
+        playerAnimation = Animations.getStarting();
         startingFrameCount = Animations.getStarting().getKeyFrames().length;
         fallingFrameCount = Animations.getFall().getKeyFrames().length;
 
@@ -50,6 +52,7 @@ public class Player extends State {
 
         playerX = Constants.PLAYER_X; // Initial X position of the player
         playerY = Constants.PLAYER_Y; // Initial Y position of the player
+        setInputProcessor();
     }
 
     private void setPlayerBody() {
@@ -60,8 +63,8 @@ public class Player extends State {
 
         PolygonShape shape = new PolygonShape();
         shape.setAsBox(
-                (float) animation.getKeyFrames()[0].getWidth() / 3.5f,
-                (float) animation.getKeyFrames()[0].getHeight() / 3.5f
+                (float) playerAnimation.getKeyFrames()[0].getWidth() / 3.5f,
+                (float) playerAnimation.getKeyFrames()[0].getHeight() / 3.5f
         );
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;
@@ -73,21 +76,21 @@ public class Player extends State {
     public void render (SpriteBatch batch) {
         batch.begin();
         background.render(batch, playerX);
-        if(animation == Animations.getStarting()) {
+        if(playerAnimation == Animations.getStarting()) {
             batch.draw(
-                    animation.getKeyFrame(elapsed, true),
+                    playerAnimation.getKeyFrame(elapsed, true),
                     playerX - 19.5f,
                     playerY - 2.5f
             );
         } else if(!isFalling) {
             batch.draw(
-                    animation.getKeyFrame(elapsed, true),
+                    playerAnimation.getKeyFrame(elapsed, true),
                     playerX,
                     playerY
             );
         } else {
             batch.draw(
-                    animation.getKeyFrame(elapsed, false),
+                    playerAnimation.getKeyFrame(elapsed, false),
                     playerX,
                     playerY
             );
@@ -98,18 +101,18 @@ public class Player extends State {
     public void update(float dt) {
         background.update(dt);
 
-        if(animation == Animations.getStarting()) {
-            if(animation.getKeyFrameIndex(elapsed) == startingFrameCount - 1) {
+        if(playerAnimation == Animations.getStarting()) {
+            if(playerAnimation.getKeyFrameIndex(elapsed) == startingFrameCount - 1) {
                 elapsed = 0;
-                animation = Animations.getSkate();
+                playerAnimation = Animations.getSkate();
             } else {
                 playerX += startSpeed * Gdx.graphics.getDeltaTime();
                 startSpeed *= 1.1f;
                 if(startSpeed > Constants.PLAYER_SPEED) startSpeed = Constants.PLAYER_SPEED;
             }
             setElapsed(dt);
-        } else if(animation == Animations.getFall()) {
-            if(animation.getKeyFrameIndex(elapsed) < fallingFrameCount - 1) {
+        } else if(playerAnimation == Animations.getFall()) {
+            if(playerAnimation.getKeyFrameIndex(elapsed) < fallingFrameCount - 1) {
                 setElapsed(dt);
             }
             fall();
@@ -122,8 +125,8 @@ public class Player extends State {
 
         if(!GameStateManager.World.isLocked() && playerBody != null) {
             playerBodyDef.position.set(
-                    playerX + Constants.PLAYER_BOX_OFFSET + animation.getKeyFrames()[0].getWidth() / 3f,
-                    playerY + animation.getKeyFrames()[0].getHeight() / 3f
+                    playerX + Constants.PLAYER_BOX_OFFSET + playerAnimation.getKeyFrames()[0].getWidth() / 3f,
+                    playerY + playerAnimation.getKeyFrames()[0].getHeight() / 3f
             );
             playerBody.setTransform(playerBodyDef.position, 0);
         }
@@ -136,13 +139,13 @@ public class Player extends State {
     }
 
     private void handleJump() {
-        if(animation == Animations.getStarting()) {
+        if(playerAnimation == Animations.getStarting()) {
             return;
         }
         if (!isJumping && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             isJumping = true;
-            animation = Animations.getJump();
             elapsed = 0;
+            playerAnimation = Animations.getJump();
             jump();
         }
 
@@ -190,8 +193,8 @@ public class Player extends State {
             speedOffset = 1;
             isJumping = false;
             playerY = Constants.PLAYER_Y;
-            animation = Animations.getSkate();
             elapsed = 0;
+            playerAnimation = Animations.getSkate();
         } else {
             playerY -= speed;
             speed += speedOffset;
@@ -205,12 +208,69 @@ public class Player extends State {
     }
 
     public void setFallAnimation() {
-        animation = Animations.getFall();
         elapsed = 0;
+        playerAnimation = Animations.getFall();
         isFalling = true;
     }
 
     private void setElapsed(float dt) {
         elapsed += dt;
+    }
+
+    private void setInputProcessor() {
+        inputProcessor = new InputProcessor() {
+            @Override
+            public boolean keyDown(int keycode) {
+                return false;
+            }
+
+            @Override
+            public boolean keyUp(int keycode) {
+                return false;
+            }
+
+            @Override
+            public boolean keyTyped(char character) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchUp(int screenX, int screenY, int pointer, int button) {
+                Vector3 touchPoint = new Vector3(screenX, screenY, 0);
+                GameStateManager.Camera.unproject(touchPoint);
+                float worldX = screenX * Gdx.graphics.getWidth() / (float) Gdx.graphics.getBackBufferWidth();
+                float worldY = (Gdx.graphics.getHeight() - screenY) * Gdx.graphics.getHeight() / (float) Gdx.graphics.getBackBufferHeight();
+                if(PauseButton.pauseButtonBounds.contains(touchPoint.x, touchPoint.y)) {
+                    gsm.push(new Pause(gsm));
+                }
+                return false;
+            }
+
+            @Override
+            public boolean touchCancelled(int screenX, int screenY, int pointer, int button) {
+                return false;
+            }
+
+            @Override
+            public boolean touchDragged(int screenX, int screenY, int pointer) {
+                return false;
+            }
+
+            @Override
+            public boolean mouseMoved(int screenX, int screenY) {
+                return false;
+            }
+
+            @Override
+            public boolean scrolled(float amountX, float amountY) {
+                return false;
+            }
+        };
+        Gdx.input.setInputProcessor(inputProcessor);
     }
 }

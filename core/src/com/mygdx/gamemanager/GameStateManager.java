@@ -34,6 +34,9 @@ public class GameStateManager {
 
     public void pop() {
         states.pop();
+        if(!states.empty()) {
+            Gdx.input.setInputProcessor(states.peek().inputProcessor);
+        }
     }
 
     public void set(State state) {
