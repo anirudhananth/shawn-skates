@@ -5,6 +5,7 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.mygdx.animations.Animations;
 import com.mygdx.background.Background;
 import com.mygdx.helper.Constants;
 import com.mygdx.states.Player;
@@ -33,8 +34,8 @@ public class GameStateManager {
     }
 
     public void pop() {
-        states.pop();
         if(!states.empty()) {
+            states.pop();
             Gdx.input.setInputProcessor(states.peek().inputProcessor);
         }
     }
@@ -64,6 +65,7 @@ public class GameStateManager {
             state.dispose();
         }
         World.dispose();
+        Animations.dispose();
     }
 
     private void setContactListeners() {

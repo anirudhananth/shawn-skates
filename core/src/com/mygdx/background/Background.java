@@ -1,18 +1,14 @@
 package com.mygdx.background;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Body;
 import com.badlogic.gdx.physics.box2d.BodyDef;
 import com.badlogic.gdx.physics.box2d.FixtureDef;
 import com.badlogic.gdx.physics.box2d.PolygonShape;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
-import com.mygdx.states.Pause;
+import com.mygdx.states.Player;
 
 public class Background {
     GameStateManager gsm;
@@ -36,6 +32,7 @@ public class Background {
         setGround();
 
         PauseButton.create();
+        ExitButton.create();
     }
 
     private void setPowerUpBody() {
@@ -75,7 +72,10 @@ public class Background {
         batch.draw(bgTexture, (offset - 1) * bgTexture.getWidth() + 10f, 0);
         batch.draw(bgTexture, offset * bgTexture.getWidth() + 10f, 0);
         batch.draw(bgTexture, (offset + 1) * bgTexture.getWidth() + 10f, 0);
-        PauseButton.render(batch);
+        if(Player.canDrawUI) {
+            PauseButton.render(batch);
+            ExitButton.render(batch);
+        }
         batch.draw(powerUp, 1200, 75);
     }
 
@@ -85,5 +85,11 @@ public class Background {
     public void dispose() {
         bgTexture.dispose();
         PauseButton.dispose();
+        ExitButton.dispose();
+        GameStateManager.World.destroyBody(powerUpBody);
+        GameStateManager.World.destroyBody(ground);
+        powerUp.dispose();
+        ground = null;
+        powerUpBody = null;
     }
 }

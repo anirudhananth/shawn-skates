@@ -10,6 +10,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.animations.Animations;
 import com.mygdx.background.Background;
+import com.mygdx.background.ExitButton;
 import com.mygdx.background.PauseButton;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
@@ -33,6 +34,7 @@ public class Player extends State {
     private float elapsed;
     float startSpeed = 0.01f;
     public boolean isFalling = false;
+    public static boolean canDrawUI = true;
 
     public Player(GameStateManager gsm) {
         super(gsm);
@@ -124,16 +126,24 @@ public class Player extends State {
         }
 
         if(!GameStateManager.World.isLocked() && playerBody != null) {
-            playerBodyDef.position.set(
-                    playerX + Constants.PLAYER_BOX_OFFSET + playerAnimation.getKeyFrames()[0].getWidth() / 3f,
-                    playerY + playerAnimation.getKeyFrames()[0].getHeight() / 3f
-            );
+            if(isJumping || isLanding) {
+                playerBodyDef.position.set(
+                        playerX + Constants.PLAYER_BOX_OFFSET + playerAnimation.getKeyFrames()[0].getWidth() / 3f,
+                        playerY + playerAnimation.getKeyFrames()[0].getHeight() / 3f + Constants.PLAYER_BOX_OFFSET
+                );
+            } else {
+                playerBodyDef.position.set(
+                        playerX + Constants.PLAYER_BOX_OFFSET + playerAnimation.getKeyFrames()[0].getWidth() / 3f,
+                        playerY + playerAnimation.getKeyFrames()[0].getHeight() / 3f
+                );
+            }
             playerBody.setTransform(playerBodyDef.position, 0);
         }
 
         GameStateManager.Camera.position.set(
-                playerX + Constants.CAMERA_PLAYER_OFFSET,
-                Gdx.graphics.getHeight() / 2f, 0
+                playerX + GameStateManager.Camera.viewportWidth / 2f - Constants.CAMERA_PLAYER_OFFSET,
+                GameStateManager.Camera.viewportHeight / 2f,
+                0
         );
         GameStateManager.Camera.update();
     }
@@ -177,10 +187,10 @@ public class Player extends State {
             playerX = 0;
         }
 
-        if(playerY == Constants.PLAYER_Y) return;
-        if(playerY < Constants.PLAYER_Y) {
+        if(playerY == Constants.PLAYER_FALL_Y) return;
+        if(playerY < Constants.PLAYER_FALL_Y) {
             isFalling = false;
-            playerY = Constants.PLAYER_Y;
+            playerY = Constants.PLAYER_FALL_Y;
         } else {
             playerY -= Constants.FALL_SPEED;
         }
@@ -203,14 +213,19 @@ public class Player extends State {
     }
 
     public void dispose () {
-        Animations.dispose();
         background.dispose();
+        playerBody.destroyFixture(playerBody.getFixtureList().first());
+        GameStateManager.World.destroyBody(playerBody);
+        playerBody = null;
+        playerBodyDef = null;
+        isFalling = false;
     }
 
     public void setFallAnimation() {
         elapsed = 0;
         playerAnimation = Animations.getFall();
         isFalling = true;
+        canDrawUI = false;
     }
 
     private void setElapsed(float dt) {
@@ -247,6 +262,16 @@ public class Player extends State {
                 float worldY = (Gdx.graphics.getHeight() - screenY) * Gdx.graphics.getHeight() / (float) Gdx.graphics.getBackBufferHeight();
                 if(PauseButton.pauseButtonBounds.contains(touchPoint.x, touchPoint.y)) {
                     gsm.push(new Pause(gsm));
+                }
+                if(ExitButton.exitButtonBounds.contains(touchPoint.x, touchPoint.y)) {
+                    GameStateManager.Camera.position.set(
+                            GameStateManager.Camera.viewportWidth / 2f,
+                            GameStateManager.Camera.viewportHeight / 2f,
+                            0
+                    );
+                    GameStateManager.Camera.update();
+                    dispose();
+                    gsm.pop();
                 }
                 return false;
             }
