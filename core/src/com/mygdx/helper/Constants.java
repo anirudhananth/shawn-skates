@@ -14,6 +14,7 @@ public class Constants {
     public static final int PLAYER_FALL_Y = 60;
     public static final float PLAYER_SPEED = 300f;
     public static final float FALL_SPEED = 4f;
+    public static final float POWER_UP_HEIGHT = 400f;
     public static final String BG_PATH = "assets/background.png";
     public static final String PB_PATH = "assets/buttons/play.png";
     public static final String EB_PATH = "assets/buttons/exit.png";

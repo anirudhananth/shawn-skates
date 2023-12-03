@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.animations.Animations;
 import com.mygdx.background.Background;
+import com.mygdx.background.PowerUp;
 import com.mygdx.helper.Constants;
 import com.mygdx.states.Player;
 import com.mygdx.states.State;
@@ -83,6 +84,25 @@ public class GameStateManager {
                     if (contact.getFixtureB().getBody() == player.playerBody) {
                         if (contact.getFixtureA().getBody() == background.powerUpBody) {
                             player.setFallAnimation();
+                        }
+                    }
+
+                    if (contact.getFixtureA().getBody() == player.playerBody) {
+                        Body body = contact.getFixtureB().getBody();
+                        for(PowerUp powerUp : Background.powerUps) {
+                            if(body == powerUp.powerUpBody) {
+                                System.out.println("PowerUp");
+                                powerUp.setCollected(true);
+                            }
+                        }
+                    }
+                    if (contact.getFixtureB().getBody() == player.playerBody) {
+                        Body body = contact.getFixtureA().getBody();
+                        for(PowerUp powerUp : Background.powerUps) {
+                            if(body == powerUp.powerUpBody) {
+                                System.out.println("PowerUp");
+                                powerUp.setCollected(true);
+                            }
                         }
                     }
                 }

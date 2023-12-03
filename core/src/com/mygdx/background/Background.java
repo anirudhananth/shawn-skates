@@ -10,6 +10,10 @@ import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
 import com.mygdx.states.Player;
 
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Random;
+
 public class Background {
     GameStateManager gsm;
     public Texture bgTexture;
@@ -17,10 +21,15 @@ public class Background {
     private final String bgPath;
     public Body powerUpBody;
     public Body ground;
+    public static ArrayList<PowerUp> powerUps;
+    private float timeSinceLastPowerUpSpawn = 0;
+    private float spawnInterval = 20.0f; // spawn a power-up every 3 seconds, for example
+    private final Random random = new Random();
 
     public Background(GameStateManager gsm) {
         this.gsm = gsm;
         bgPath = Constants.BG_PATH;
+        powerUps = new ArrayList<>();
         create();
     }
 
@@ -33,6 +42,10 @@ public class Background {
 
         PauseButton.create();
         ExitButton.create();
+        powerUps.add(new PowerUp());
+        for(PowerUp powerUp : powerUps) {
+            powerUp.create();
+        }
     }
 
     private void setPowerUpBody() {
@@ -76,19 +89,46 @@ public class Background {
             PauseButton.render(batch);
             ExitButton.render(batch);
         }
+        for(PowerUp powerUp : powerUps) {
+            if(!powerUp.isCollected()) {
+                powerUp.render(batch);
+            }
+        }
         batch.draw(powerUp, 1200, 75);
     }
 
     public void update(float dt) {
+        PowerUp.update(dt);
+        timeSinceLastPowerUpSpawn += dt;
+        if(timeSinceLastPowerUpSpawn >= spawnInterval) {
+            spawnPowerUp();
+            timeSinceLastPowerUpSpawn = 0;
+            spawnInterval = 15f + random.nextFloat() * 15f;
+        }
+
+        Iterator<PowerUp> iterator = powerUps.iterator();
+        while (iterator.hasNext()) {
+            PowerUp powerUp = iterator.next();
+            if (powerUp.isOffScreen() || powerUp.isCollected()) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private void spawnPowerUp() {
+        float x = GameStateManager.Camera.position.x + GameStateManager.Camera.viewportWidth + random.nextFloat() * 1000;
+        PowerUp powerUp = new PowerUp(x);
+        powerUp.create();
+        powerUps.add(powerUp);
     }
 
     public void dispose() {
         bgTexture.dispose();
         PauseButton.dispose();
         ExitButton.dispose();
+        PowerUp.dispose();
         GameStateManager.World.destroyBody(powerUpBody);
         GameStateManager.World.destroyBody(ground);
-        powerUp.dispose();
         ground = null;
         powerUpBody = null;
     }

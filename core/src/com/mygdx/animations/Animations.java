@@ -26,7 +26,7 @@ public class Animations {
         Jump = new AnimateSprite(Constants.JUMP_PATH, fps).getAnimation();
         SuperJump = new AnimateSprite(Constants.SUPER_JUMP_PATH, superJumpFps).getAnimation();
         Fall = new AnimateSprite(Constants.FALL_PATH, superJumpFps).getAnimation();
-        // Power Up
+        PowerUp = new AnimateSprite(Constants.POWER_UP_PATH, fps).getAnimation();
         Countdown = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("assets/countdown.gif").read());
     }
 
