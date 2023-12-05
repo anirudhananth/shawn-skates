@@ -2,10 +2,7 @@ package com.mygdx.background;
 
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.physics.box2d.Body;
-import com.badlogic.gdx.physics.box2d.BodyDef;
-import com.badlogic.gdx.physics.box2d.FixtureDef;
-import com.badlogic.gdx.physics.box2d.PolygonShape;
+import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
 import com.mygdx.states.Player;
@@ -17,51 +14,31 @@ import java.util.Random;
 public class Background {
     GameStateManager gsm;
     public Texture bgTexture;
-    public Texture powerUp;
     private final String bgPath;
-    public Body powerUpBody;
     public Body ground;
     public static ArrayList<PowerUp> powerUps;
-    private float timeSinceLastPowerUpSpawn = 0;
-    private float spawnInterval = 20.0f; // spawn a power-up every 3 seconds, for example
+    public static ArrayList<Obstacle> obstacles;
+    private float timeSinceLastPowerUpSpawn = 0f;
+    private float timeSinceLastObstacleSpawn = 0f;
+    private float powerUpSpawnInterval = 0.0f;
+    private float obstacleSpawnInterval = 0f;
     private final Random random = new Random();
 
     public Background(GameStateManager gsm) {
         this.gsm = gsm;
         bgPath = Constants.BG_PATH;
         powerUps = new ArrayList<>();
+        obstacles = new ArrayList<>();
         create();
     }
 
     public void create() {
         bgTexture = new Texture(bgPath);
-        powerUp = new Texture("assets/testorb.png");
 
-        setPowerUpBody();
         setGround();
 
         PauseButton.create();
         ExitButton.create();
-        powerUps.add(new PowerUp());
-        for(PowerUp powerUp : powerUps) {
-            powerUp.create();
-        }
-    }
-
-    private void setPowerUpBody() {
-        BodyDef bodyDef = new BodyDef();
-        bodyDef.type = BodyDef.BodyType.StaticBody;
-        bodyDef.position.set(1200 + powerUp.getWidth()/2f, 75 + powerUp.getHeight()/2f);
-        powerUpBody = GameStateManager.World.createBody(bodyDef);
-
-        PolygonShape shape = new PolygonShape();
-        shape.setAsBox((float) powerUp.getWidth() / 2, (float) powerUp.getHeight() / 2);
-
-        FixtureDef fixtureDef = new FixtureDef();
-        fixtureDef.shape = shape;
-        fixtureDef.density = 1f;
-
-        powerUpBody.createFixture(fixtureDef);
     }
 
     private void setGround() {
@@ -89,37 +66,58 @@ public class Background {
             PauseButton.render(batch);
             ExitButton.render(batch);
         }
+        for(Obstacle obstacle : obstacles) {
+            obstacle.render(batch);
+        }
         for(PowerUp powerUp : powerUps) {
             if(!powerUp.isCollected()) {
                 powerUp.render(batch);
             }
         }
-        batch.draw(powerUp, 1200, 75);
     }
 
     public void update(float dt) {
         PowerUp.update(dt);
         timeSinceLastPowerUpSpawn += dt;
-        if(timeSinceLastPowerUpSpawn >= spawnInterval) {
+        timeSinceLastObstacleSpawn += dt;
+
+        if(timeSinceLastPowerUpSpawn >= powerUpSpawnInterval) {
             spawnPowerUp();
             timeSinceLastPowerUpSpawn = 0;
-            spawnInterval = 15f + random.nextFloat() * 15f;
+            powerUpSpawnInterval = 15f + random.nextFloat() * 15f;
         }
 
-        Iterator<PowerUp> iterator = powerUps.iterator();
-        while (iterator.hasNext()) {
-            PowerUp powerUp = iterator.next();
+        Iterator<PowerUp> powerUpIterator = powerUps.iterator();
+        while (powerUpIterator.hasNext()) {
+            PowerUp powerUp = powerUpIterator.next();
             if (powerUp.isOffScreen() || powerUp.isCollected()) {
-                iterator.remove();
+                powerUpIterator.remove();
+            }
+        }
+
+        if(timeSinceLastObstacleSpawn >= obstacleSpawnInterval) {
+            spawnObstacle();
+            timeSinceLastObstacleSpawn = 0f;
+            obstacleSpawnInterval = 5f + random.nextFloat() * 5f;
+        }
+
+        Iterator<Obstacle> obstacleIterator = obstacles.iterator();
+        while (obstacleIterator.hasNext()) {
+            Obstacle obstacle = obstacleIterator.next();
+            if (obstacle.isOffScreen()) {
+                obstacleIterator.remove();
             }
         }
     }
 
     private void spawnPowerUp() {
-        float x = GameStateManager.Camera.position.x + GameStateManager.Camera.viewportWidth + random.nextFloat() * 1000;
-        PowerUp powerUp = new PowerUp(x);
-        powerUp.create();
+        PowerUp powerUp = new PowerUp();
         powerUps.add(powerUp);
+    }
+
+    private void spawnObstacle() {
+        Obstacle obstacle = new Obstacle();
+        obstacles.add(obstacle);
     }
 
     public void dispose() {
@@ -127,9 +125,7 @@ public class Background {
         PauseButton.dispose();
         ExitButton.dispose();
         PowerUp.dispose();
-        GameStateManager.World.destroyBody(powerUpBody);
         GameStateManager.World.destroyBody(ground);
         ground = null;
-        powerUpBody = null;
     }
 }

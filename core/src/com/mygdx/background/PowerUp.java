@@ -9,21 +9,20 @@ import com.mygdx.animations.Animations;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
 
+import java.util.Random;
+
 public class PowerUp {
     public static Animation<Texture> powerUpAnimation;
     private static float elapsed;
     public Body powerUpBody;
     private boolean isCollected;
     private final float powerUpX, powerUpY;
+    Random random = new Random();
 
     PowerUp() {
-        powerUpX = 1200f;
-        powerUpY = 400f;
-    }
-
-    PowerUp(float X) {
-        powerUpX = X;
+        powerUpX = GameStateManager.Camera.position.x + GameStateManager.Camera.viewportWidth + random.nextFloat() * 1000;
         powerUpY = Constants.POWER_UP_HEIGHT;
+        create();
     }
 
     public void create() {
@@ -76,5 +75,12 @@ public class PowerUp {
 
     public void setCollected(boolean b) {
         isCollected = b;
+    }
+
+    public Body getPowerUpBody() {
+        return powerUpBody;
+    }
+    public void setPowerUpBodyNull() {
+        powerUpBody = null;
     }
 }

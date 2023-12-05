@@ -7,6 +7,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.animations.Animations;
 import com.mygdx.background.Background;
+import com.mygdx.background.Obstacle;
 import com.mygdx.background.PowerUp;
 import com.mygdx.helper.Constants;
 import com.mygdx.states.Player;
@@ -75,15 +76,24 @@ public class GameStateManager {
             public void beginContact(Contact contact) {
                 if(states.peek() instanceof Player) {
                     Player player = (Player)states.peek();
-                    Background background = player.background;
                     if (contact.getFixtureA().getBody() == player.playerBody) {
-                        if (contact.getFixtureB().getBody() == background.powerUpBody) {
-                            player.setFallAnimation();
+                        Body body = contact.getFixtureB().getBody();
+                        for(Obstacle obstacle: Background.obstacles) {
+                            if(body == obstacle.getObstacleBody()) {
+                                System.out.println("Obstacle");
+                                player.setFallAnimation();
+                                return;
+                            }
                         }
                     }
                     if (contact.getFixtureB().getBody() == player.playerBody) {
-                        if (contact.getFixtureA().getBody() == background.powerUpBody) {
-                            player.setFallAnimation();
+                        Body body = contact.getFixtureA().getBody();
+                        for(Obstacle obstacle: Background.obstacles) {
+                            if(body == obstacle.getObstacleBody()) {
+                                System.out.println("Obstacle");
+                                player.setFallAnimation();
+                                return;
+                            }
                         }
                     }
 
@@ -93,6 +103,8 @@ public class GameStateManager {
                             if(body == powerUp.powerUpBody) {
                                 System.out.println("PowerUp");
                                 powerUp.setCollected(true);
+                                Player.setIsSuperJump();
+                                return;
                             }
                         }
                     }
@@ -102,6 +114,8 @@ public class GameStateManager {
                             if(body == powerUp.powerUpBody) {
                                 System.out.println("PowerUp");
                                 powerUp.setCollected(true);
+                                Player.setIsSuperJump();
+                                return;
                             }
                         }
                     }

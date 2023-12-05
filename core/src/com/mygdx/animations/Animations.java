@@ -16,16 +16,18 @@ public class Animations {
     private static Animation<Texture> Fall;
     private static Animation<Texture> PowerUp;
     private static Animation<TextureRegion> Countdown;
-    private final static float fps = 17f;
-    private final static float superJumpFps = 14f;
+    private final static float startFps = 17f;
+    private final static float fps = 16f;
+    private final static float superJumpFps = 12f;
+    private final static float fallFps = 18f;
 
     public static void create() {
         Idle = new AnimateSprite(Constants.IDLE_PATH, fps).getAnimation();
-        Starting = new AnimateSprite(Constants.STARTING_PATH, fps).getAnimation();
+        Starting = new AnimateSprite(Constants.STARTING_PATH, startFps).getAnimation();
         Skate = new AnimateSprite(Constants.SKATE_PATH, fps).getAnimation();
         Jump = new AnimateSprite(Constants.JUMP_PATH, fps).getAnimation();
         SuperJump = new AnimateSprite(Constants.SUPER_JUMP_PATH, superJumpFps).getAnimation();
-        Fall = new AnimateSprite(Constants.FALL_PATH, superJumpFps).getAnimation();
+        Fall = new AnimateSprite(Constants.FALL_PATH, fallFps).getAnimation();
         PowerUp = new AnimateSprite(Constants.POWER_UP_PATH, fps).getAnimation();
         Countdown = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("assets/countdown.gif").read());
     }

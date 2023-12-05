@@ -9,9 +9,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.animations.Animations;
-import com.mygdx.background.Background;
-import com.mygdx.background.ExitButton;
-import com.mygdx.background.PauseButton;
+import com.mygdx.background.*;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
 
@@ -26,15 +24,15 @@ public class Player extends State {
     public static float playerX, playerY;
     private boolean isJumping = false;
     private boolean isLanding = false;
-    private final float jumpSpeed = 17;
-    private final float superJumpSpeed = 20;
     private float fallSpeed = Constants.PLAYER_SPEED;
-    public float speed = jumpSpeed;
-    public float speedOffset = 1;
+    public float verticalSpeed;
+    public float verticalSpeedOffset = 1;
     private float elapsed;
     float startSpeed = 0.01f;
     public boolean isFalling = false;
     public static boolean canDrawUI = true;
+    private static boolean isSuperJump;
+    private static int jumpCounter;
 
     public Player(GameStateManager gsm) {
         super(gsm);
@@ -46,6 +44,7 @@ public class Player extends State {
 
     public void create () {
         elapsed = 0;
+        isSuperJump = false;
         playerAnimation = Animations.getStarting();
         startingFrameCount = Animations.getStarting().getKeyFrames().length;
         fallingFrameCount = Animations.getFall().getKeyFrames().length;
@@ -155,27 +154,54 @@ public class Player extends State {
         if (!isJumping && Gdx.input.isKeyPressed(Input.Keys.SPACE)) {
             isJumping = true;
             elapsed = 0;
-            playerAnimation = Animations.getJump();
-            jump();
+            if(isSuperJump) {
+                playerAnimation = Animations.getSuperJump();
+                verticalSpeed = Constants.PLAYER_SUPER_JUMP_SPEED;
+                superJump();
+            } else {
+                playerAnimation = Animations.getJump();
+                verticalSpeed = Constants.PLAYER_JUMP_SPEED;
+                jump();
+            }
         }
 
         if(isJumping && !isLanding) {
-            jump();
+            if(isSuperJump) {
+                jump();
+            } else {
+                superJump();
+            }
         }
 
-        if(isLanding || isFalling) {
-            land();
+        if(isLanding) {
+            if(isSuperJump && jumpCounter == 1) {
+                highLand();
+            } else {
+                land();
+            }
         }
     }
 
     private void jump() {
-        if (speed >= 0 && speedOffset >= 0) {
-            playerY += speed;
-            speed -= speedOffset;
-            speedOffset -= 0.05f;
+        if (verticalSpeed >= 0 && verticalSpeedOffset >= 0) {
+            playerY += verticalSpeed;
+            verticalSpeed -= verticalSpeedOffset;
+            verticalSpeedOffset -= 0.05f;
         } else {
-            speed = 0;
-            speedOffset = 0;
+            verticalSpeed = 0;
+            verticalSpeedOffset = 0;
+            isLanding = true;
+        }
+    }
+
+    private void superJump() {
+        if (verticalSpeed >= 0 && verticalSpeedOffset >= 0) {
+            playerY += verticalSpeed;
+            verticalSpeed -= verticalSpeedOffset;
+            verticalSpeedOffset -= 0.05f;
+        } else {
+            verticalSpeed = 0;
+            verticalSpeedOffset = 0;
             isLanding = true;
         }
     }
@@ -199,16 +225,33 @@ public class Player extends State {
     private void land() {
         if(playerY < Constants.PLAYER_Y) {
             isLanding = false;
-            speed = jumpSpeed;
-            speedOffset = 1;
+            verticalSpeedOffset = 1;
             isJumping = false;
             playerY = Constants.PLAYER_Y;
             elapsed = 0;
             playerAnimation = Animations.getSkate();
+            jumpCounter--;
         } else {
-            playerY -= speed;
-            speed += speedOffset;
-            speedOffset += 0.02f;
+            playerY -= verticalSpeed;
+            verticalSpeed += verticalSpeedOffset;
+            verticalSpeedOffset += 0.02f;
+        }
+    }
+
+    private void highLand() {
+        if(playerY < Constants.PLAYER_Y) {
+            isLanding = false;
+            verticalSpeedOffset = 1;
+            isJumping = false;
+            playerY = Constants.PLAYER_Y;
+            elapsed = 0;
+            playerAnimation = Animations.getSkate();
+            jumpCounter--;
+            isSuperJump = false;
+        } else {
+            playerY -= verticalSpeed;
+            verticalSpeed += verticalSpeedOffset;
+            verticalSpeedOffset += 0.005f;
         }
     }
 
@@ -221,6 +264,17 @@ public class Player extends State {
         isFalling = false;
     }
 
+    private void destroyBodies() {
+        for(PowerUp powerUp: Background.powerUps) {
+            GameStateManager.World.destroyBody(powerUp.getPowerUpBody());
+            powerUp.setPowerUpBodyNull();
+        }
+        for(Obstacle obstacle: Background.obstacles) {
+            GameStateManager.World.destroyBody(obstacle.getObstacleBody());
+            obstacle.setObstacleBodyNull();
+        }
+    }
+
     public void setFallAnimation() {
         elapsed = 0;
         playerAnimation = Animations.getFall();
@@ -230,6 +284,11 @@ public class Player extends State {
 
     private void setElapsed(float dt) {
         elapsed += dt;
+    }
+
+    public static void setIsSuperJump() {
+        isSuperJump = true;
+        jumpCounter = 2;
     }
 
     private void setInputProcessor() {
@@ -271,6 +330,7 @@ public class Player extends State {
                     );
                     GameStateManager.Camera.update();
                     dispose();
+                    destroyBodies();
                     gsm.pop();
                 }
                 return false;
