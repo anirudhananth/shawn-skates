@@ -19,7 +19,7 @@ public class Animations {
     private final static float startFps = 17f;
     private final static float fps = 16f;
     private final static float superJumpFps = 12f;
-    private final static float fallFps = 18f;
+    private final static float fallFps = 15f;
 
     public static void create() {
         Idle = new AnimateSprite(Constants.IDLE_PATH, fps).getAnimation();

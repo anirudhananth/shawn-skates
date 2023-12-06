@@ -17,7 +17,7 @@ public class Obstacle {
     public Obstacle() {
         index = random.nextInt(Constants.OBSTACLE_COUNT);
         obstacleTexture = new Texture("assets/obstacles/" + index + ".png");
-        this.x = GameStateManager.Camera.position.x + GameStateManager.Camera.viewportWidth + random.nextFloat() * 1000f;
+        this.x = GameStateManager.Camera.position.x + GameStateManager.Camera.viewportWidth + 250f + random.nextFloat() * 750f;
         this.y = Constants.OBSTACLE_HEIGHT;
         create();
     }
@@ -43,7 +43,7 @@ public class Obstacle {
 
     private void setCircularBody() {
         CircleShape shape = new CircleShape();
-        shape.setRadius((float) obstacleTexture.getWidth() / 2f);
+        shape.setRadius((float) obstacleTexture.getHeight() / 2f);
 
         FixtureDef fixtureDef = new FixtureDef();
         fixtureDef.shape = shape;

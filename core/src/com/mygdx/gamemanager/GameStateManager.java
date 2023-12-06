@@ -19,7 +19,7 @@ public class GameStateManager {
     public static OrthographicCamera Camera;
     public static World World;
     private static Stack<State> states;
-    Box2DDebugRenderer debugRenderer;
+    private Box2DDebugRenderer debugRenderer;
 
     public GameStateManager() {
         states = new Stack<State>();
@@ -43,6 +43,7 @@ public class GameStateManager {
     }
 
     public void set(State state) {
+        setDebugRenderer();
         states.pop();
         states.push(state);
     }
@@ -60,6 +61,11 @@ public class GameStateManager {
     public void render(SpriteBatch batch) {
         states.peek().render(batch);
         debugRenderer.render(World, Camera.combined);
+    }
+
+    public void setDebugRenderer() {
+        debugRenderer.dispose();
+        debugRenderer = new Box2DDebugRenderer();
     }
 
     public static void dispose() {
@@ -100,7 +106,7 @@ public class GameStateManager {
                     if (contact.getFixtureA().getBody() == player.playerBody) {
                         Body body = contact.getFixtureB().getBody();
                         for(PowerUp powerUp : Background.powerUps) {
-                            if(body == powerUp.powerUpBody) {
+                            if(body == powerUp.getPowerUpBody()) {
                                 System.out.println("PowerUp");
                                 powerUp.setCollected(true);
                                 Player.setIsSuperJump();
@@ -111,7 +117,7 @@ public class GameStateManager {
                     if (contact.getFixtureB().getBody() == player.playerBody) {
                         Body body = contact.getFixtureA().getBody();
                         for(PowerUp powerUp : Background.powerUps) {
-                            if(body == powerUp.powerUpBody) {
+                            if(body == powerUp.getPowerUpBody()) {
                                 System.out.println("PowerUp");
                                 powerUp.setCollected(true);
                                 Player.setIsSuperJump();

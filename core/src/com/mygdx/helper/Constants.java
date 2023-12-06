@@ -28,6 +28,10 @@ public class Constants {
     public static final String BG_PATH = "assets/background.png";
     public static final String PB_PATH = "assets/buttons/play.png";
     public static final String EB_PATH = "assets/buttons/exit.png";
+    public static final String PAUSE_PATH = "assets/buttons/pause.png";
+    public static final String QUIT_PATH = "assets/buttons/quit.png";
+    public static final String RESUME_PATH = "assets/buttons/resume.png";
+    public static final String RETURN_PATH = "assets/buttons/return.png";
     public static final String IDLE_PATH = "assets/idle/";
     public static final String STARTING_PATH = "assets/starting/";
     public static final String SKATE_PATH = "assets/skate/";

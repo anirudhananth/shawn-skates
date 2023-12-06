@@ -14,7 +14,7 @@ import java.util.Random;
 public class PowerUp {
     public static Animation<Texture> powerUpAnimation;
     private static float elapsed;
-    public Body powerUpBody;
+    private Body powerUpBody;
     private boolean isCollected;
     private final float powerUpX, powerUpY;
     Random random = new Random();

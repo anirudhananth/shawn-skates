@@ -1,5 +1,6 @@
 package com.mygdx.states;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
@@ -84,6 +85,18 @@ public class Menu extends State {
         if(Gdx.input.isKeyPressed(Input.Keys.ENTER)) {
             gsm.push(new Player(gsm));
         }
+        playButtonBounds.set(
+                GameStateManager.Camera.position.x - playBtn.getWidth() / 2f,
+                GameStateManager.Camera.position.y + BUTTON_GAP,
+                playBtn.getWidth(),
+                playBtn.getHeight()
+        );
+        exitButtonBounds.set(
+                GameStateManager.Camera.position.x - exitBtn.getWidth() / 2f,
+                GameStateManager.Camera.position.y - BUTTON_GAP - exitBtn.getHeight(),
+                exitBtn.getWidth(),
+                exitBtn.getHeight()
+        );
     }
 
     @Override

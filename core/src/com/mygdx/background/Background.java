@@ -20,8 +20,8 @@ public class Background {
     public static ArrayList<Obstacle> obstacles;
     private float timeSinceLastPowerUpSpawn = 0f;
     private float timeSinceLastObstacleSpawn = 0f;
-    private float powerUpSpawnInterval = 0.0f;
-    private float obstacleSpawnInterval = 0f;
+    private float powerUpSpawnInterval = 5.0f;
+    private float obstacleSpawnInterval = 2f;
     private final Random random = new Random();
 
     public Background(GameStateManager gsm) {
@@ -98,7 +98,7 @@ public class Background {
         if(timeSinceLastObstacleSpawn >= obstacleSpawnInterval) {
             spawnObstacle();
             timeSinceLastObstacleSpawn = 0f;
-            obstacleSpawnInterval = 5f + random.nextFloat() * 5f;
+            obstacleSpawnInterval = 3f + random.nextFloat() * 5f;
         }
 
         Iterator<Obstacle> obstacleIterator = obstacles.iterator();
@@ -127,5 +127,7 @@ public class Background {
         PowerUp.dispose();
         GameStateManager.World.destroyBody(ground);
         ground = null;
+        powerUps = null;
+        obstacles = null;
     }
 }

@@ -13,6 +13,8 @@ import com.mygdx.background.*;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
 
+import java.util.Iterator;
+
 public class Player extends State {
     GameStateManager gsm;
     public Animation<Texture> playerAnimation;
@@ -20,6 +22,7 @@ public class Player extends State {
     private int fallingFrameCount;
     public Body playerBody;
     public Background background;
+    private EndScreen endScreen;
     private BodyDef playerBodyDef;
     public static float playerX, playerY;
     private boolean isJumping = false;
@@ -30,6 +33,7 @@ public class Player extends State {
     private float elapsed;
     float startSpeed = 0.01f;
     public boolean isFalling = false;
+    private float fallTimer = 0f;
     public static boolean canDrawUI = true;
     private static boolean isSuperJump;
     private static int jumpCounter;
@@ -48,6 +52,7 @@ public class Player extends State {
         playerAnimation = Animations.getStarting();
         startingFrameCount = Animations.getStarting().getKeyFrames().length;
         fallingFrameCount = Animations.getFall().getKeyFrames().length;
+        endScreen = new EndScreen();
 
         setPlayerBody();
 
@@ -95,6 +100,10 @@ public class Player extends State {
                     playerX,
                     playerY
             );
+            if(fallTimer >= 3f) {
+                if(!EndScreen.getAccess()) EndScreen.setAccess();
+                endScreen.render(batch);
+            }
         }
         batch.end();
     }
@@ -123,6 +132,7 @@ public class Player extends State {
             setElapsed(dt);
             handleJump();
         }
+        if(isFalling) fallTimer += dt;
 
         if(!GameStateManager.World.isLocked() && playerBody != null) {
             if(isJumping || isLanding) {
@@ -215,7 +225,6 @@ public class Player extends State {
 
         if(playerY == Constants.PLAYER_FALL_Y) return;
         if(playerY < Constants.PLAYER_FALL_Y) {
-            isFalling = false;
             playerY = Constants.PLAYER_FALL_Y;
         } else {
             playerY -= Constants.FALL_SPEED;
@@ -262,6 +271,7 @@ public class Player extends State {
         playerBody = null;
         playerBodyDef = null;
         isFalling = false;
+        fallTimer = 0f;
     }
 
     private void destroyBodies() {
@@ -323,15 +333,12 @@ public class Player extends State {
                     gsm.push(new Pause(gsm));
                 }
                 if(ExitButton.exitButtonBounds.contains(touchPoint.x, touchPoint.y)) {
-                    GameStateManager.Camera.position.set(
-                            GameStateManager.Camera.viewportWidth / 2f,
-                            GameStateManager.Camera.viewportHeight / 2f,
-                            0
-                    );
-                    GameStateManager.Camera.update();
-                    dispose();
-                    destroyBodies();
-                    gsm.pop();
+                    restart();
+                }
+                if(EndScreen.getAccess()) {
+                    if(endScreen.getReturnButtonBounds().contains(touchPoint.x, touchPoint.y)) {
+                        restart();
+                    }
                 }
                 return false;
             }
@@ -354,6 +361,19 @@ public class Player extends State {
             @Override
             public boolean scrolled(float amountX, float amountY) {
                 return false;
+            }
+
+            private void restart() {
+                GameStateManager.Camera.position.set(
+                        GameStateManager.Camera.viewportWidth / 2f,
+                        GameStateManager.Camera.viewportHeight / 2f,
+                        0
+                );
+                GameStateManager.Camera.update();
+                destroyBodies();
+                dispose();
+                Player.canDrawUI = true;
+                gsm.pop();
             }
         };
         Gdx.input.setInputProcessor(inputProcessor);

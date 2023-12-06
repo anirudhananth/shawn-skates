@@ -4,19 +4,17 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.animations.Animations;
-import com.mygdx.animations.GifDecoder;
 import com.mygdx.gamemanager.GameStateManager;
+import com.mygdx.helper.Constants;
 
 public class Pause extends State {
     private final GameStateManager gsm;
     private Texture background;
-    private Texture pauseButton;
+    private Texture screen;
     private Texture resumeButton;
     private Circle resumeButtonBounds;
     private float elapsed;
@@ -35,10 +33,10 @@ public class Pause extends State {
         pixmap.setColor(1, 1, 1, 0.2f);
         pixmap.fill();
 
-        pauseButton = new Texture(pixmap);
+        screen = new Texture(pixmap);
         pixmap.dispose();
-        background = new Texture("assets/background.png");
-        resumeButton = new Texture("assets/buttons/resume.png");
+        background = new Texture(Constants.BG_PATH);
+        resumeButton = new Texture(Constants.RESUME_PATH);
         resumeButtonBounds = new Circle(
                 GameStateManager.Camera.position.x,
                 GameStateManager.Camera.position.y,
@@ -62,7 +60,7 @@ public class Pause extends State {
 
         // Pause button
         batch.draw(
-                pauseButton,
+                screen,
                 GameStateManager.Camera.position.x - GameStateManager.Camera.viewportWidth/2f,
                 GameStateManager.Camera.position.y - GameStateManager.Camera.viewportHeight / 2f,
                 Gdx.graphics.getWidth(), Gdx.graphics.getHeight()
@@ -100,7 +98,7 @@ public class Pause extends State {
     @Override
     public void dispose() {
         background.dispose();
-        pauseButton.dispose();
+        screen.dispose();
         resumeButton.dispose();
     }
 
