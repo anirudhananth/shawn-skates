@@ -23,6 +23,9 @@ public class Background {
     private float powerUpSpawnInterval = 5.0f;
     private float obstacleSpawnInterval = 2f;
     private final Random random = new Random();
+    private Score score;
+    private float scoreTimer;
+    private int obstaclesCrossed;
 
     public Background(GameStateManager gsm) {
         this.gsm = gsm;
@@ -39,6 +42,8 @@ public class Background {
 
         PauseButton.create();
         ExitButton.create();
+        score = new Score();
+        obstaclesCrossed = 0;
     }
 
     private void setGround() {
@@ -74,17 +79,19 @@ public class Background {
                 powerUp.render(batch);
             }
         }
+        score.render(batch);
     }
 
     public void update(float dt) {
         PowerUp.update(dt);
+        updateScore();
         timeSinceLastPowerUpSpawn += dt;
         timeSinceLastObstacleSpawn += dt;
 
         if(timeSinceLastPowerUpSpawn >= powerUpSpawnInterval) {
             spawnPowerUp();
             timeSinceLastPowerUpSpawn = 0;
-            powerUpSpawnInterval = 15f + random.nextFloat() * 15f;
+            powerUpSpawnInterval = Constants.MINIMUM_POWER_UP_SPAWN_INTERVAL + random.nextFloat() * Constants.RANDOM_POWER_UP_SPAWN_INTERVAL;
         }
 
         Iterator<PowerUp> powerUpIterator = powerUps.iterator();
@@ -98,12 +105,16 @@ public class Background {
         if(timeSinceLastObstacleSpawn >= obstacleSpawnInterval) {
             spawnObstacle();
             timeSinceLastObstacleSpawn = 0f;
-            obstacleSpawnInterval = 3f + random.nextFloat() * 5f;
+            obstacleSpawnInterval = Constants.MINIMUM_OBSTACLE_SPAWN_INTERVAL + random.nextFloat() * Constants.RANDOM_OBSTACLE_SPAWN_INTERVAL;
         }
 
         Iterator<Obstacle> obstacleIterator = obstacles.iterator();
         while (obstacleIterator.hasNext()) {
             Obstacle obstacle = obstacleIterator.next();
+            if(!obstacle.isPlayerCrossed() && obstacle.getX() < Player.playerX) {
+                obstacle.setPlayerCrossed();
+                obstaclesCrossed++;
+            }
             if (obstacle.isOffScreen()) {
                 obstacleIterator.remove();
             }
@@ -118,6 +129,13 @@ public class Background {
     private void spawnObstacle() {
         Obstacle obstacle = new Obstacle();
         obstacles.add(obstacle);
+    }
+
+    private void updateScore() {
+        float distanceDiff = Player.playerX - Constants.PLAYER_X;
+        int scoreValue = (int) distanceDiff / Constants.SCORE_RATE;
+        scoreValue += obstaclesCrossed * 5;
+        score.setScore(scoreValue);
     }
 
     public void dispose() {

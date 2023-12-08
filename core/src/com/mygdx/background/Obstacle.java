@@ -13,12 +13,18 @@ public class Obstacle {
     private final float x, y;
     Random random = new Random();
     private final int index;
+    private boolean playerCrossed;
 
     public Obstacle() {
         index = random.nextInt(Constants.OBSTACLE_COUNT);
         obstacleTexture = new Texture("assets/obstacles/" + index + ".png");
-        this.x = GameStateManager.Camera.position.x + GameStateManager.Camera.viewportWidth + 250f + random.nextFloat() * 750f;
+        this.x =
+                GameStateManager.Camera.position.x
+                + GameStateManager.Camera.viewportWidth
+                + Constants.MINIMUM_OBSTACLE_SPAWN_OFFSET
+                + random.nextFloat() * Constants.RANDOM_OBSTACLE_SPAWN_OFFSET;
         this.y = Constants.OBSTACLE_HEIGHT;
+        playerCrossed = false;
         create();
     }
 
@@ -29,7 +35,9 @@ public class Obstacle {
         obstacleBody = GameStateManager.World.createBody(bodyDef);
 
         switch(index) {
+            case 1:
             case 2:
+            case 8:
             case 11:
             case 14:
                 setCircularBody();
@@ -50,6 +58,7 @@ public class Obstacle {
         fixtureDef.density = 1f;
 
         obstacleBody.createFixture(fixtureDef);
+        shape.dispose();
     }
 
     private void setPolygonBody() {
@@ -61,6 +70,7 @@ public class Obstacle {
         fixtureDef.density = 1f;
 
         obstacleBody.createFixture(fixtureDef);
+        shape.dispose();
     }
 
     public void render(SpriteBatch batch) {
@@ -83,6 +93,22 @@ public class Obstacle {
 
     public void setObstacleBodyNull() {
         obstacleBody = null;
+    }
+
+    public boolean isPlayerCrossed() {
+        return playerCrossed;
+    }
+
+    public void setPlayerCrossed() {
+        playerCrossed = true;
+    }
+
+    public float getX() {
+        return x;
+    }
+
+    public float getY() {
+        return y;
     }
 
     public boolean isOffScreen() {

@@ -24,6 +24,13 @@ public class Constants {
     public static final float OBSTACLE_HEIGHT = 75f;
     public static final float PLAYER_JUMP_SPEED = 18f;
     public static final float PLAYER_SUPER_JUMP_SPEED = 22f;
+    public static final int SCORE_RATE = 800;
+    public static final float MINIMUM_OBSTACLE_SPAWN_INTERVAL = 2f;
+    public static final float RANDOM_OBSTACLE_SPAWN_INTERVAL = 3f;
+    public static final float MINIMUM_OBSTACLE_SPAWN_OFFSET = 50f;
+    public static final float RANDOM_OBSTACLE_SPAWN_OFFSET = 50f;
+    public static final float MINIMUM_POWER_UP_SPAWN_INTERVAL = 15f;
+    public static final float RANDOM_POWER_UP_SPAWN_INTERVAL = 15f;
     public static final int OBSTACLE_COUNT = countFilesInDirectory("assets/obstacles/");
     public static final String BG_PATH = "assets/background.png";
     public static final String PB_PATH = "assets/buttons/play.png";

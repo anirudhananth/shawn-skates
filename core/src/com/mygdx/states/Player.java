@@ -77,6 +77,7 @@ public class Player extends State {
         fixtureDef.density = 1f;
 
         playerBody.createFixture(fixtureDef);
+        shape.dispose();
     }
 
     public void render (SpriteBatch batch) {
@@ -102,6 +103,10 @@ public class Player extends State {
             );
             if(fallTimer >= 3f) {
                 if(!EndScreen.getAccess()) EndScreen.setAccess();
+                if(!endScreen.getScoreSet()) {
+                    endScreen.setScores();
+                    endScreen.setScoreSet();
+                }
                 endScreen.render(batch);
             }
         }
@@ -126,6 +131,7 @@ public class Player extends State {
                 setElapsed(dt);
             }
             fall();
+            if(endScreen.getScoreSet()) endScreen.update();
         } else {
             playerX += Constants.PLAYER_SPEED * Gdx.graphics.getDeltaTime();
 
