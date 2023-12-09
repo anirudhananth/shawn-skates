@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
 import com.mygdx.animations.Animations;
+import com.mygdx.audio.SoundList;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
 
@@ -121,6 +122,11 @@ public class Pause extends State {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                Vector3 touchPoint = new Vector3(screenX, screenY, 0);
+                GameStateManager.Camera.unproject(touchPoint);
+                if(!startCountDown && resumeButtonBounds.contains(touchPoint.x, touchPoint.y)) {
+                    SoundList.playClickSound();
+                }
                 return false;
             }
 

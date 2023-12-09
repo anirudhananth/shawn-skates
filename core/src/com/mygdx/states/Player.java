@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.*;
 import com.mygdx.animations.Animations;
+import com.mygdx.audio.MusicList;
+import com.mygdx.audio.SoundList;
 import com.mygdx.background.*;
 import com.mygdx.gamemanager.GameStateManager;
 import com.mygdx.helper.Constants;
@@ -27,6 +29,7 @@ public class Player extends State {
     public static float playerX, playerY;
     private boolean isJumping = false;
     private boolean isLanding = false;
+    private boolean playedFallSound = false;
     private float fallSpeed = Constants.PLAYER_SPEED;
     public float verticalSpeed;
     public float verticalSpeedOffset = 1;
@@ -37,11 +40,18 @@ public class Player extends State {
     public static boolean canDrawUI = true;
     private static boolean isSuperJump;
     private static int jumpCounter;
+    private boolean exitTouchDown;
+    private boolean pauseTouchDown;
+    private boolean returnTouchDown;
 
     public Player(GameStateManager gsm) {
         super(gsm);
         this.gsm = gsm;
         background = new Background(gsm);
+
+        exitTouchDown = false;
+        pauseTouchDown = false;
+        returnTouchDown = false;
 
         create();
     }
@@ -59,6 +69,8 @@ public class Player extends State {
         playerX = Constants.PLAYER_X; // Initial X position of the player
         playerY = Constants.PLAYER_Y; // Initial Y position of the player
         setInputProcessor();
+
+        MusicList.playBackgroundMusic();
     }
 
     private void setPlayerBody() {
@@ -127,6 +139,11 @@ public class Player extends State {
             }
             setElapsed(dt);
         } else if(playerAnimation == Animations.getFall()) {
+            if((isLanding && fallTimer >= 0.5f && !playedFallSound) || (fallTimer >= 0.15f && !playedFallSound)) {
+                SoundList.playGameOverSound();
+                SoundList.playFallSound();
+                playedFallSound = true;
+            }
             if(playerAnimation.getKeyFrameIndex(elapsed) < fallingFrameCount - 1) {
                 setElapsed(dt);
             }
@@ -171,10 +188,12 @@ public class Player extends State {
             isJumping = true;
             elapsed = 0;
             if(isSuperJump) {
+                SoundList.playSuperJumpSound();
                 playerAnimation = Animations.getSuperJump();
                 verticalSpeed = Constants.PLAYER_SUPER_JUMP_SPEED;
                 superJump();
             } else {
+                SoundList.playJumpSound();
                 playerAnimation = Animations.getJump();
                 verticalSpeed = Constants.PLAYER_JUMP_SPEED;
                 jump();
@@ -326,6 +345,25 @@ public class Player extends State {
 
             @Override
             public boolean touchDown(int screenX, int screenY, int pointer, int button) {
+                Vector3 touchPoint = new Vector3(screenX, screenY, 0);
+                GameStateManager.Camera.unproject(touchPoint);
+                float worldX = screenX * Gdx.graphics.getWidth() / (float) Gdx.graphics.getBackBufferWidth();
+                float worldY = (Gdx.graphics.getHeight() - screenY) * Gdx.graphics.getHeight() / (float) Gdx.graphics.getBackBufferHeight();
+                if(PauseButton.pauseButtonBounds.contains(touchPoint.x, touchPoint.y)) {
+                    pauseTouchDown = true;
+                    SoundList.playClickSound();
+                }
+                if(ExitButton.exitButtonBounds.contains(touchPoint.x, touchPoint.y)) {
+                    exitTouchDown = true;
+                    SoundList.playClickSound();
+                }
+                if(EndScreen.getAccess()) {
+                    if(endScreen.getReturnButtonBounds().contains(touchPoint.x, touchPoint.y)) {
+                        returnTouchDown = true;
+                        SoundList.playClickSound();
+                    }
+                }
+
                 return false;
             }
 
@@ -335,17 +373,21 @@ public class Player extends State {
                 GameStateManager.Camera.unproject(touchPoint);
                 float worldX = screenX * Gdx.graphics.getWidth() / (float) Gdx.graphics.getBackBufferWidth();
                 float worldY = (Gdx.graphics.getHeight() - screenY) * Gdx.graphics.getHeight() / (float) Gdx.graphics.getBackBufferHeight();
-                if(PauseButton.pauseButtonBounds.contains(touchPoint.x, touchPoint.y)) {
+                if(pauseTouchDown && PauseButton.pauseButtonBounds.contains(touchPoint.x, touchPoint.y)) {
                     gsm.push(new Pause(gsm));
                 }
-                if(ExitButton.exitButtonBounds.contains(touchPoint.x, touchPoint.y)) {
+                if(exitTouchDown && ExitButton.exitButtonBounds.contains(touchPoint.x, touchPoint.y)) {
                     restart();
                 }
-                if(EndScreen.getAccess()) {
+                if(returnTouchDown && EndScreen.getAccess()) {
                     if(endScreen.getReturnButtonBounds().contains(touchPoint.x, touchPoint.y)) {
                         restart();
                     }
                 }
+
+                pauseTouchDown = false;
+                exitTouchDown = false;
+                returnTouchDown = false;
                 return false;
             }
 
@@ -379,6 +421,8 @@ public class Player extends State {
                 destroyBodies();
                 dispose();
                 Player.canDrawUI = true;
+                MusicList.stopBackgroundMusic();
+                MusicList.playMenuMusic();
                 gsm.pop();
             }
         };

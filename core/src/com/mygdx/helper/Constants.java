@@ -11,6 +11,7 @@ public class Constants {
     public static final int HEIGHT = 720;
     public static final int FOREGROUND_FPS = 60;
     public static final String TITLE = "ShawnSkates";
+    public static final String TITLE_PATH = "assets/main-images/title.png";
     public static final float GRAVITY = -15f;
     public static final int BG_SPEED = 200;
     public static final float CAMERA_PLAYER_OFFSET = 90f;
@@ -32,7 +33,7 @@ public class Constants {
     public static final float MINIMUM_POWER_UP_SPAWN_INTERVAL = 15f;
     public static final float RANDOM_POWER_UP_SPAWN_INTERVAL = 15f;
     public static final int OBSTACLE_COUNT = countFilesInDirectory("assets/obstacles/");
-    public static final String BG_PATH = "assets/background.png";
+    public static final String BG_PATH = "assets/main-images/background.png";
     public static final String PB_PATH = "assets/buttons/play.png";
     public static final String EB_PATH = "assets/buttons/exit.png";
     public static final String PAUSE_PATH = "assets/buttons/pause.png";
@@ -46,6 +47,17 @@ public class Constants {
     public static final String SUPER_JUMP_PATH = "assets/super-jump/";
     public static final String FALL_PATH = "assets/fall/";
     public static final String POWER_UP_PATH = "assets/power-up/";
+    public static final String MENU_MUSIC = "audio/music/menu.mp3";
+    public static final String SKATE_MUSIC = "audio/music/skate.mp3";
+    public static final String BACKGROUND_MUSIC = "audio/music/theme.mp3";
+    public static final String FALL_SOUND = "audio/sound/fall.mp3";
+    public static final String JUMP_SOUND = "audio/sound/jump.mp3";
+    public static final String SUPER_JUMP_SOUND = "audio/sound/super-jump.mp3";
+    public static final String GAME_OVER_SOUND = "audio/sound/game-over.mp3";
+    public static final String POWER_UP_SOUND = "audio/sound/power-up.mp3";
+    public static final String VOLUME_PATH = "assets/buttons/volume.png";
+    public static final String CLICK_PATH = "audio/sound/click.mp3";
+
 
     private static int countFilesInDirectory(String directoryPath) {
         FileHandle dirHandle = Gdx.files.internal(directoryPath);
