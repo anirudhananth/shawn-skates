@@ -4,13 +4,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.mygdx.gamemanager.GameStateManager;
+import com.mygdx.helper.Constants;
 
 public class ExitButton {
     private static Texture button;
     public static Circle exitButtonBounds;
 
     public static void create() {
-        button = new Texture("assets/buttons/quit.png");
+        button = new Texture(Constants.QUIT_PATH);
         exitButtonBounds = new Circle(
                 GameStateManager.Camera.position.x - GameStateManager.Camera.viewportWidth / 2f + button.getWidth() * 1.5f,
                 GameStateManager.Camera.viewportHeight - button.getHeight() * 1.5f,

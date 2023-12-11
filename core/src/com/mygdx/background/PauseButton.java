@@ -14,7 +14,7 @@ public class PauseButton {
     public static Circle pauseButtonBounds;
 
     public static void create() {
-        button = new Texture("assets/buttons/pause.png");
+        button = new Texture("buttons/pause.png");
         x = GameStateManager.Camera.viewportWidth/2f - button.getWidth()*1.5f;
         y = GameStateManager.Camera.viewportHeight - button.getHeight()*1.5f;
         pauseButtonBounds = new Circle(

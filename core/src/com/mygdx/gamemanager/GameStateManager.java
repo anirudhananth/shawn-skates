@@ -25,13 +25,14 @@ public class GameStateManager {
     private Box2DDebugRenderer debugRenderer;
 
     public GameStateManager() {
+        Animations.create();
         states = new Stack<State>();
         GameStateManager.World = new World(new Vector2(0, Constants.GRAVITY), false);
         GameStateManager.Camera = new OrthographicCamera();
         GameStateManager.Camera.setToOrtho(false, Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
 
         setContactListeners();
-        debugRenderer = new Box2DDebugRenderer();
+//        debugRenderer = new Box2DDebugRenderer();
     }
 
     public void push(State state) {
@@ -63,12 +64,12 @@ public class GameStateManager {
 
     public void render(SpriteBatch batch) {
         states.peek().render(batch);
-        debugRenderer.render(World, Camera.combined);
+//        debugRenderer.render(World, Camera.combined);
     }
 
     public void setDebugRenderer() {
-        debugRenderer.dispose();
-        debugRenderer = new Box2DDebugRenderer();
+//        debugRenderer.dispose();
+//        debugRenderer = new Box2DDebugRenderer();
     }
 
     public static void dispose() {

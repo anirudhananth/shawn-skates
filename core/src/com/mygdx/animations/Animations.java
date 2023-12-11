@@ -8,7 +8,7 @@ import com.mygdx.helper.Constants;
 
 public class Animations {
 
-    private static Animation<Texture> Idle;
+    public static Animation<Texture> Idle;
     private static Animation<Texture> Starting;
     private static Animation<Texture> Skate;
     private static Animation<Texture> Jump;
@@ -22,14 +22,14 @@ public class Animations {
     private final static float fallFps = 15f;
 
     public static void create() {
-        Idle = new AnimateSprite(Constants.IDLE_PATH, fps).getAnimation();
-        Starting = new AnimateSprite(Constants.STARTING_PATH, startFps).getAnimation();
-        Skate = new AnimateSprite(Constants.SKATE_PATH, fps).getAnimation();
-        Jump = new AnimateSprite(Constants.JUMP_PATH, fps).getAnimation();
-        SuperJump = new AnimateSprite(Constants.SUPER_JUMP_PATH, superJumpFps).getAnimation();
-        Fall = new AnimateSprite(Constants.FALL_PATH, fallFps).getAnimation();
-        PowerUp = new AnimateSprite(Constants.POWER_UP_PATH, fps).getAnimation();
-        Countdown = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("assets/countdown.gif").read());
+        Idle = new AnimateSprite(Constants.IDLE_PATH, fps, Constants.IDLE_COUNT).getAnimation();
+        Starting = new AnimateSprite(Constants.STARTING_PATH, startFps, Constants.STARTING_COUNT).getAnimation();
+        Skate = new AnimateSprite(Constants.SKATE_PATH, fps, Constants.SKATE_COUNT).getAnimation();
+        Jump = new AnimateSprite(Constants.JUMP_PATH, fps, Constants.JUMP_COUNT).getAnimation();
+        SuperJump = new AnimateSprite(Constants.SUPER_JUMP_PATH, superJumpFps, Constants.SUPER_JUMP_COUNT).getAnimation();
+        Fall = new AnimateSprite(Constants.FALL_PATH, fallFps, Constants.FALL_COUNT).getAnimation();
+        PowerUp = new AnimateSprite(Constants.POWER_UP_PATH, fps, Constants.POWER_UP_COUNT).getAnimation();
+        Countdown = GifDecoder.loadGIFAnimation(Animation.PlayMode.LOOP, Gdx.files.internal("countdown.gif").read());
     }
 
     public static Animation<Texture> getIdle() {

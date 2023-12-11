@@ -5,6 +5,7 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Animation;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Circle;
 import com.badlogic.gdx.math.Vector3;
@@ -36,6 +37,7 @@ public class Menu extends State {
     private boolean volumeTouchDown;
     private final float BUTTON_GAP = 2f;
     private float elapsed;
+    private Animation<Texture> animation;
     public Menu(GameStateManager gsm) {
         super(gsm);
 
@@ -49,15 +51,17 @@ public class Menu extends State {
         exitTouchDown = false;
         volumeTouchDown = false;
 
+        animation = Animations.getIdle();
+
         create();
     }
 
     private void create() {
-        title = new Texture(titlePath);
-        background = new Texture(bgPath);
-        playBtn = new Texture(playBtnPath);
-        exitBtn = new Texture(exitBtnPath);
-        volumeBtn = new Texture(volumeBtnPath);
+        title = new Texture(Gdx.files.internal(titlePath));
+        background = new Texture(Gdx.files.internal(bgPath));
+        playBtn = new Texture(Gdx.files.internal(playBtnPath));
+        exitBtn = new Texture(Gdx.files.internal(exitBtnPath));
+        volumeBtn = new Texture(Gdx.files.internal(volumeBtnPath));
 
         playButtonBounds = new Rectangle(
                 Gdx.graphics.getWidth() / 2f - playBtn.getWidth() / 2f,
@@ -94,11 +98,13 @@ public class Menu extends State {
                 GameStateManager.Camera.position.x - GameStateManager.Camera.viewportWidth / 2f,
                 GameStateManager.Camera.position.y - GameStateManager.Camera.viewportHeight / 2f
         );
-        batch.draw(
-                Animations.getIdle().getKeyFrame(elapsed, true),
-                GameStateManager.Camera.position.x - GameStateManager.Camera.viewportWidth / 2f + Constants.PLAYER_X - 28f,
-                GameStateManager.Camera.position.y - GameStateManager.Camera.viewportHeight / 2f + Constants.PLAYER_Y
-        );
+        if(animation != null && animation.getKeyFrames().length > 0) {
+            batch.draw(
+                    animation.getKeyFrame(elapsed, true),
+                    GameStateManager.Camera.position.x - GameStateManager.Camera.viewportWidth / 2f + Constants.PLAYER_X - 28f,
+                    GameStateManager.Camera.position.y - GameStateManager.Camera.viewportHeight / 2f + Constants.PLAYER_Y
+            );
+        }
         batch.draw(
                 playBtn,
                 GameStateManager.Camera.position.x - playBtn.getWidth() / 2f,

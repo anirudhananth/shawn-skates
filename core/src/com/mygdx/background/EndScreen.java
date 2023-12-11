@@ -85,14 +85,14 @@ public class EndScreen {
         highScoreString = "High Score: " + highScoreString;
 
         Pixmap pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(136/255f,93/255f,63/255f, 1f);
+        pixmap.setColor(136/255f,93/255f,63/255f, 1.0f);
         pixmap.fill();
 
         scorePanel = new Texture(pixmap);
         pixmap.dispose();
 
         pixmap = new Pixmap(1, 1, Pixmap.Format.RGBA8888);
-        pixmap.setColor(136/255f,93/255f,63/255f, 1f);
+        pixmap.setColor(136/255f,93/255f,63/255f, 1.0f);
         pixmap.fill();
 
         highScorePanel = new Texture(pixmap);

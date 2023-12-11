@@ -16,11 +16,13 @@ public class AnimateSprite extends Sprite
     private final float fps; // Your frame rate in frame per second
     private float timer;
     private String directoryPath;
+    private int frameCount;
 
     // Constructor
-    public AnimateSprite(String directoryPath, float framePerSecond) {
-        super(new Texture(directoryPath + "0.png")); // Init your sprite with the first frame texture
+    public AnimateSprite(String directoryPath, float framePerSecond, int frameCount) {
+        super(new Texture(Gdx.files.internal(directoryPath + "0.png"))); // Init your sprite with the first frame texture
 
+        this.frameCount = frameCount;
         this.directoryPath = directoryPath;
         fps = framePerSecond;
         currentFrame = 0;
@@ -58,14 +60,9 @@ public class AnimateSprite extends Sprite
     }
 
     public void loadFrames() {
-        FileHandle directoryHandle = Gdx.files.internal(directoryPath);
-        FileHandle[] imageFiles = directoryHandle.list("png"); // Assuming your frames are PNG images
-        sortFileByName(imageFiles);
-
-        frames = new Texture[imageFiles.length];
-
-        for (int i = 0; i < imageFiles.length; i++) {
-            frames[i] = new Texture(imageFiles[i]);
+        Texture[] frames = new Texture[frameCount];
+        for (int i = 0; i < frameCount; i++) {
+            frames[i] = new Texture(Gdx.files.internal(directoryPath + i + ".png"));
         }
 
         animation = new Animation<>(1f/fps, frames);

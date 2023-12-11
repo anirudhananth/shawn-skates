@@ -1,5 +1,6 @@
 package com.mygdx.background;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.physics.box2d.*;
@@ -17,7 +18,7 @@ public class Obstacle {
 
     public Obstacle() {
         index = random.nextInt(Constants.OBSTACLE_COUNT);
-        obstacleTexture = new Texture("assets/obstacles/" + index + ".png");
+        obstacleTexture = new Texture(Gdx.files.internal("obstacles/" + index + ".png"));
         this.x =
                 GameStateManager.Camera.position.x
                 + GameStateManager.Camera.viewportWidth

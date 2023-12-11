@@ -15,7 +15,6 @@ public class Launcher extends ApplicationAdapter {
 
 	@Override
 	public void create () {
-		Animations.create();
 		gsm = new GameStateManager();
 		batch = new SpriteBatch();
 
