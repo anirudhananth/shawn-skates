@@ -50,7 +50,6 @@ public class Pause extends State {
     public void render(SpriteBatch batch) {
         batch.begin();
 
-        // Background
         batch.draw(
                 background,
                 GameStateManager.Camera.position.x - GameStateManager.Camera.viewportWidth / 2f,
@@ -59,7 +58,6 @@ public class Pause extends State {
                 Gdx.graphics.getHeight()
         );
 
-        // Pause button
         batch.draw(
                 screen,
                 GameStateManager.Camera.position.x - GameStateManager.Camera.viewportWidth/2f,
@@ -68,14 +66,12 @@ public class Pause extends State {
         );
 
         if(!startCountDown) {
-            // Resume button
             batch.draw(
                     resumeButton,
                     GameStateManager.Camera.position.x - resumeButton.getWidth() / 2f,
                     GameStateManager.Camera.position.y - resumeButton.getHeight() / 2f
             );
         } else {
-            // Countdown gif animation
             batch.draw(
                     Animations.getCountdown().getKeyFrame(elapsed, false),
                     GameStateManager.Camera.position.x - Animations.getCountdown().getKeyFrame(elapsed, true).getRegionWidth() / 2f,

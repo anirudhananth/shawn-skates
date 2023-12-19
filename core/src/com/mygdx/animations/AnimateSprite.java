@@ -9,18 +9,16 @@ import com.badlogic.gdx.graphics.g2d.Sprite;
 
 public class AnimateSprite extends Sprite
 {
-    // Attributes
     private Animation<Texture> animation;
-    private Texture[] frames; // Your frames
-    public int currentFrame; // This value will iterate over frames to display the right frame
-    private final float fps; // Your frame rate in frame per second
+    private Texture[] frames; 
+    public int currentFrame; 
+    private final float fps; 
     private float timer;
     private String directoryPath;
     private int frameCount;
 
-    // Constructor
     public AnimateSprite(String directoryPath, float framePerSecond, int frameCount) {
-        super(new Texture(Gdx.files.internal(directoryPath + "0.png"))); // Init your sprite with the first frame texture
+        super(new Texture(Gdx.files.internal(directoryPath + "0.png"))); 
 
         this.frameCount = frameCount;
         this.directoryPath = directoryPath;
@@ -29,9 +27,10 @@ public class AnimateSprite extends Sprite
         timer = 0;
         loadFrames();
     }
+    
     public AnimateSprite(Texture[] frames, float framePerSecond)
     {
-        super(frames[0]); // Init your sprite with the first frame texture
+        super(frames[0]); 
 
         fps = framePerSecond;
         currentFrame = 0;
@@ -42,7 +41,7 @@ public class AnimateSprite extends Sprite
         Arrays.sort(imageFiles, new Comparator<FileHandle>() {
             @Override
             public int compare(FileHandle file1, FileHandle file2) {
-                // Extract numeric values from file names and compare
+                
                 int number1 = extractNumber(file1.nameWithoutExtension());
                 int number2 = extractNumber(file2.nameWithoutExtension());
 
@@ -85,13 +84,11 @@ public class AnimateSprite extends Sprite
 
     public void nextFrame()
     {
-        // Change frame
         if (currentFrame < frames.length)
             currentFrame++;
         else
             currentFrame = 0;
-
-        // Set the good frame texture
+            
         setTexture(frames[currentFrame]);
     }
 

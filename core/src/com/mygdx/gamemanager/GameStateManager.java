@@ -22,7 +22,7 @@ public class GameStateManager {
     public static OrthographicCamera Camera;
     public static World World;
     private static Stack<State> states;
-    private Box2DDebugRenderer debugRenderer;
+    // private Box2DDebugRenderer debugRenderer;
 
     public GameStateManager() {
         Animations.create();
@@ -53,11 +53,10 @@ public class GameStateManager {
     }
 
     public void update(float dt) {
-        float timeStep = 1/60f; // 60 times per second
+        float timeStep = 1/60f;
         int velocityIterations = 6;
         int positionIterations = 2;
 
-// Inside your game loop
         World.step(timeStep, velocityIterations, positionIterations);
         states.peek().update(dt);
     }
@@ -92,7 +91,6 @@ public class GameStateManager {
                             if(body == obstacle.getObstacleBody()) {
                                 player.setFallAnimation();
                                 MusicList.stopBackgroundMusic();
-//                                SoundList.playFallSound();
                                 return;
                             }
                         }
@@ -103,7 +101,6 @@ public class GameStateManager {
                             if(body == obstacle.getObstacleBody()) {
                                 player.setFallAnimation();
                                 MusicList.stopBackgroundMusic();
-//                                SoundList.playFallSound();
                                 return;
                             }
                         }

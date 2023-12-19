@@ -195,7 +195,7 @@ public class Menu extends State {
                     SoundList.playClickSound();
                 }
 
-                return true; // Return true to indicate that the touch is handled
+                return true;
             }
 
             @Override

@@ -66,8 +66,8 @@ public class Player extends State {
 
         setPlayerBody();
 
-        playerX = Constants.PLAYER_X; // Initial X position of the player
-        playerY = Constants.PLAYER_Y; // Initial Y position of the player
+        playerX = Constants.PLAYER_X;
+        playerY = Constants.PLAYER_Y;
         setInputProcessor();
 
         MusicList.playBackgroundMusic();
